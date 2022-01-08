@@ -1,0 +1,32 @@
+name: jjCheckInScript
+
+on:
+  # push:
+  #   # 代码推送到 main 分之时自动执行
+  #   branches: [ 'main' ]
+  # 定时执行
+  schedule:
+    # 每天9点执行 时间格式 minute hour day month week 设置的时间是UTC 不是北京时间 需要+8
+    - cron: "0 2 * * *"
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  start:
+    # 运行环境为最新版的Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2  
+
+      #安装node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v2  
+        with:
+          node-version: '14'
+
+      # 安装依赖并且执行脚本
+      - name: npm install
+        run: npm install
+      
+      - name: Start task
+        run: node index.js
