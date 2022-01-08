@@ -1,0 +1,24 @@
+{
+  "name": "jjcheckinscript",
+  "version": "1.0.0",
+  "description": "掘金自动签到脚本",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gebilaofan/jjCheckInScript.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gebilaofan/jjCheckInScript/issues"
+  },
+  "homepage": "https://github.com/gebilaofan/jjCheckInScript#readme",
+  "dependencies": {
+    "axios": "^0.24.0"
+  }
+}
