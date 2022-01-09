@@ -67,9 +67,7 @@ const getlotteryStatus = async () => {
 const dipLucky = async () => {
   try {
     const getDipLuckyStatusRes = await axios({ url: config.api.getDipLuckyStatus, method: 'post' })
-    console.log(getDipLuckyStatusRes, '-----getDipLuckyStatus')
     const dipLuckyRes = await axios({ url: config.api.dipLucky, method: 'post' })
-    console.log(dipLuckyRes, '----dipLucky')
     // TODO:  无法区分当前是否有占喜气机会  
     console.log(`占喜气成功! 🎉 【当前幸运值：${dipLuckyRes.data.total_value}/6000】`)
   } catch (error) {
@@ -136,7 +134,7 @@ const checkIn = async () => {
 
       // 查询签到天数
       const getCheckInDaysRes = await getCheckInDays()
-      console.log(`连续抽奖${getCheckInDaysRes.continuousDay}天  总签到天数${getCheckInDaysRes.sum_count}`)
+      console.log(`连续抽奖${getCheckInDaysRes.continuousDay}天  总签到天数${getCheckInDaysRes.sumCount}`)
 
       // 签到成功 去抽奖
       await draw()
