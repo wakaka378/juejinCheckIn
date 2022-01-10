@@ -154,7 +154,7 @@ const checkIn = async () => {
 }
 
 /**
- * TODO: 发送邮件 将日志通过邮件形式发送
+ * 发送邮件
  *
  */
 const sendEmail = async () => {

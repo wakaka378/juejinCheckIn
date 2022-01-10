@@ -1,9 +1,6 @@
 name: jjCheckInScript
 
 on:
-  # push:
-  #   # 代码推送到 main 分之时自动执行
-  #   branches: [ 'main' ]
   # 定时执行
   schedule:
     # 每天9点执行 时间格式 minute hour day month week 设置的时间是UTC 不是北京时间 需要+8
