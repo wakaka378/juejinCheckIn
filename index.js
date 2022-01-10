@@ -1,6 +1,12 @@
 const axios = require('axios')
 const config = require('./config')
+const nodemailer = require('nodemailer')
+const ejs = require('ejs')
+const fs = require('fs')
+const path = require('path')
+const logs = []
 
+// 请求配置
 axios.defaults.baseURL = config.baseUrl
 axios.defaults.headers['cookie'] = config.cookie
 
@@ -13,7 +19,7 @@ axios.interceptors.response.use((response) => {
     return Promise.reject(data.err_msg)
   }
 }, (error) => {
-  return Promise.reject(error);
+  return Promise.reject(error)
 })
 
 /**
@@ -39,7 +45,7 @@ const getCheckStatus = async () => {
  */
 const getCurrentPoint = async () => {
   try {
-    const getCurrentPointRes = await axios({url: config.api.getCurrentPoint, method: 'get'})
+    const getCurrentPointRes = await axios({ url: config.api.getCurrentPoint, method: 'get' })
     console.log(`当前总矿石: ${getCurrentPointRes.data}数`)
   } catch (error) {
     throw `查询矿石失败!${error.err_msg}`
@@ -99,7 +105,7 @@ const draw = async () => {
       await getCurrentPoint()
     }
   } catch (error) {
-    console.log(`抽奖失败!=======> 【${error}】`)
+    console.error(`抽奖失败!=======> 【${error}】`)
   }
 }
 
@@ -143,7 +149,7 @@ const checkIn = async () => {
     }
 
   } catch (error) {
-    console.log(`签到失败!=======> ${error}`)
+    console.error(`签到失败!=======> ${error}`)
   }
 }
 
@@ -151,7 +157,68 @@ const checkIn = async () => {
  * TODO: 发送邮件 将日志通过邮件形式发送
  *
  */
-const sendEmail = () => {
+const sendEmail = async () => {
+  try {
+    const template = ejs.compile(fs.readFileSync(path.resolve(__dirname, 'email.ejs'), 'utf8'));
+
+    const transporter = nodemailer.createTransport({
+      service: config.emailConfig.service, // 邮箱服务
+      // host: 'smtp.163.com',
+      port: 465,
+      secure: true,
+      secureConnection: true,
+      auth: {
+        user: config.emailConfig.email, // 发送者邮箱
+        pass: config.emailConfig.pass, // 邮箱授权码
+      }
+    })
+
+    // 发送邮件
+    await transporter.sendMail({
+      from: config.emailConfig.email,
+      to: config.emailConfig.email,
+      subject: '掘金签到通知🔔',
+      html: template({
+        logs: logs
+      })
+    })
+
+  } catch (error) {
+    console.error(`邮件发送失败！${error}`)
+  }
+
 
 }
-checkIn()
+
+
+/**
+ * 启动程序  处理日志输出 开始签到流程 将结果通过邮件形式发送
+ *
+ */
+const start = async () => {
+  // 日志处理  将脚本日志通过ejs渲染成html
+  console.oldLog = console.log
+  console.oldErr = console.error
+
+  console.log = (str) => {
+    logs.push({
+      type: 'success',
+      text: str
+    })
+    console.oldLog(str)
+  }
+
+  console.error = (str) => {
+    logs.push({
+      type: 'error',
+      text: str
+    })
+    console.oldErr(str)
+  }
+
+  await checkIn()
+
+  await sendEmail()
+}
+
+start()

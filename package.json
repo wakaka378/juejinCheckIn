@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/gebilaofan/jjCheckInScript#readme",
   "dependencies": {
-    "axios": "^0.24.0"
+    "axios": "^0.24.0",
+    "ejs": "^3.1.6",
+    "nodemailer": "^6.7.2"
   }
 }

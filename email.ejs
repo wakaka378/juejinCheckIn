@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>emailTemplate</title>
+  </head>
+  <style>
+    html,
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    .box {
+      min-height: 300px;
+      width: 80%;
+      margin: 0 auto;
+    }
+
+    .top {
+      display: flex;
+      flex-direction: row;
+      height: 40px;
+      padding: 80px 0px 20px 0px;
+    }
+    .top span {
+      display: block;
+      margin-left: 20px;
+      font-size: 20px;
+    }
+    .top img {
+      display: block;
+    }
+
+    .box ul {
+      background-color: black;
+      padding: 30px 20px;
+      box-sizing: border-box;
+      list-style: none;
+      margin: 0;
+    }
+
+    .box ul li {
+      font-size: 14px;
+      color: #fff;
+      margin: 10px;
+      padding: 5px;
+      font-weight: 500;
+    }
+
+    .success {
+      color: #03b875 !important;
+    }
+
+    .error {
+      color: #cb2c2a !important;
+    }
+  </style>
+
+  <body>
+    <div class="box">
+      <div class="top">
+        <a href="https://juejin.cn/">
+          <img src="https://lf3-cdn-tos.bytescm.com/obj/static/xitu_juejin_web/e08da34488b114bd4c665ba2fa520a31.svg" alt="前往掘金">
+        </a>
+        <span>请查收签到日志📄</span>
+      </div>
+      <ul>
+        <% logs.forEach(function(item){%>
+          <% if(item.type==='success' ){ %>
+            <li class="success">
+              <%= item.text %>
+            </li>
+            <% } else {%>
+              <li class="error">
+                <%= item.text %>
+              </li>
+            <% } %>
+            <% }) %>
+      </ul>
+    </div>
+  </body>
+
+</html>

@@ -22,5 +22,14 @@ module.exports = {
     getDipLuckyStatus: '/growth_api/v1/lottery_lucky/my_lucky',
     // 沾喜气
     dipLucky: '/growth_api/v1/lottery_lucky/dip_lucky'
+  },
+  // 邮箱配置
+  emailConfig: {
+    // 邮箱服务 163|qq
+    service: '163',
+    // 邮箱
+    email: '',
+    // 邮箱授权码
+    pass: '',
   }
 }
