@@ -1,10 +1,20 @@
 name: jjCheckInScript
 
+# 环境变量
+env:
+  COOKIE: ${{ secrets.COOKIE }}
+  PASS: ${{ secrets.PASS }}
+
+  run: echo 'try to show secret 😉' && echo $COOKIE && echo $PASS
+
 on:
-  # 定时执行
-  schedule:
-    # 每天9点执行 时间格式 minute hour day month week 设置的时间是UTC 不是北京时间 需要+8
-    - cron: "0 1 * * *"
+  push:
+  # 代码推送到 main 分之时自动执行
+    branches: [ 'main' ]
+  # # 定时执行
+  # schedule:
+  #   # 每天9点执行 时间格式 minute hour day month week 设置的时间是UTC 不是北京时间 需要+8
+  #   - cron: "0 1 * * *"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:

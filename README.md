@@ -104,6 +104,7 @@ on:
 
 ## 具备能力
 - [x] `action` 每天9点定时执行
+- [ ] `action secrets` 数据加密
 - [x] 邮件通知
   - [ ] cookie过期邮件通知
 - [x] 签到
