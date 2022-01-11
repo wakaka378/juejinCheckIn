@@ -16,13 +16,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-
-      #安装node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "14"
+      - uses:
+          actions/checkout@v2
 
       # 环境变量
       - name: Secret Config
@@ -31,6 +26,12 @@ jobs:
           COOKIE: ${{ secrets.COOKIE }}
           PASS: ${{ secrets.PASS }}
           EMAIL: ${{ secrets.EMAIL }}
+      
+      #安装node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
 
       # 安装依赖并且执行脚本
       - name: npm install
