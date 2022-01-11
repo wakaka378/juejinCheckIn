@@ -1,7 +1,7 @@
 // 配置文件
 module.exports = {
   // 需要手动填写
-  cookie: '',
+  cookie: process.env.COOKIE,
   // 请求地址
   baseUrl: 'https://api.juejin.cn',
   // api地址
@@ -28,8 +28,8 @@ module.exports = {
     // 邮箱服务 163|qq
     service: '163',
     // 邮箱
-    email: 'gebilaofl@163.com',
+    email: process.env.EMIAL,
     // 邮箱授权码
-    pass: 'JCELJGOPMRNOHJPQ',
+    pass: process.env.PASS,
   }
 }
