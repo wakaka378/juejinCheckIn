@@ -28,8 +28,8 @@ module.exports = {
     // 邮箱服务 163|qq
     service: '163',
     // 邮箱
-    email: '',
+    email: 'gebilaofl@163.com',
     // 邮箱授权码
-    pass: '',
+    pass: 'JCELJGOPMRNOHJPQ',
   }
 }
