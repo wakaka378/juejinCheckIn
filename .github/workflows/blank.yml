@@ -4,8 +4,7 @@ name: jjCheckInScript
 env:
   COOKIE: ${{ secrets.COOKIE }}
   PASS: ${{ secrets.PASS }}
-
-  run: echo 'try to show secret 😉' && echo $COOKIE && echo $PASS
+  EMAIL: ${{ secrets.EMAIL }}
 
 on:
   push:
