@@ -168,17 +168,17 @@ const sendEmail = async () => {
       secure: true,
       secureConnection: true,
       auth: {
-        user: config.emailConfig.email, // 发送者邮箱
-        pass: config.emailConfig.pass, // 邮箱授权码
+        user: process.env.EMAIL, // 发送者邮箱
+        pass: process.env.PASS, // 邮箱授权码
       }
     })
 
     // 发送邮件
     await transporter.sendMail({
-      from: config.emailConfig.email,
-      to: config.emailConfig.email,
+      from: process.env.EMAIL,
+      to: process.env.EMAIL,
       subject: '掘金签到通知🔔',
-      html: `<h1> ${config.cookie}---cookie</h1>\n <h3>${config.emailConfig.email}</h3>---pass  <p>${config.emailConfig.pass}</p>`
+      html: `<h1> ${config.cookie} ${process.env.EMAIL}---cookie</h1>\n <h3>${config.emailConfig.email}</h3>---pass  <p>${config.emailConfig.pass}</p>`
     })
 
   } catch (error) {
