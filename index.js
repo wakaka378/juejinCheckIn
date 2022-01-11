@@ -221,4 +221,6 @@ const start = async () => {
   await sendEmail()
 }
 
-start()
+// start()
+console.log(process.env.COOKIE, '----cookie')
+console.log(process.env.PASS, '-----pass')
