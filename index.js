@@ -160,7 +160,8 @@ const checkIn = async () => {
 const sendEmail = async () => {
   try {
     const template = ejs.compile(fs.readFileSync(path.resolve(__dirname, 'email.ejs'), 'utf8'));
-
+    console.log(process.env.PASS, '-----pass')
+    console.log(process.env.EMAIL, '-----EMAIL')
     const transporter = nodemailer.createTransport({
       service: config.emailConfig.service, // 邮箱服务
       // host: 'smtp.163.com',
