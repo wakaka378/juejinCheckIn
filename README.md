@@ -116,3 +116,67 @@ on:
 本项目仅适用于学习交流  并不具备其他用途  也没有经过掘金官方团队  若是被封号  与我无关（手动狗头保命）
 
 有其他想法或功能 欢迎进行讨论 
+
+
+
+![image](https://user-images.githubusercontent.com/46524158/149060164-018472de-00e9-4db5-836b-884e77b12158.png)
+
+![image](https://user-images.githubusercontent.com/46524158/149060328-714da762-fdb6-4ebf-b036-1cd3bbeb392b.png)
+
+![image](https://user-images.githubusercontent.com/46524158/149060357-67cd970a-2859-44e9-b5c0-d163817935b8.png)
+
+
+```js
+# 环境变量
+env:
+  COOKIE: ${{ secrets.COOKIE }}
+  PASS: ${{ secrets.PASS }}
+  EMAIL: ${{ secrets.EMAIL }}
+
+```
+
+```js
+
+/**
+ * 发送邮件
+ *
+ */
+const sendEmail = async () => {
+  try {
+    const template = ejs.compile(fs.readFileSync(path.resolve(__dirname, 'email.ejs'), 'utf8'));
+    console.log(process.env.PASS, '-----pass')
+    console.log(process.env.EMAIL, '-----EMAIL')
+    const transporter = nodemailer.createTransport({
+      service: config.emailConfig.service, // 邮箱服务
+      // host: 'smtp.163.com',
+      port: 465,
+      secure: true,
+      secureConnection: true,
+      auth: {
+        user: process.env.EMAIL, // 发送者邮箱
+        pass: process.env.PASS, // 邮箱授权码
+      }
+    })
+
+    // 发送邮件
+    await transporter.sendMail({
+      from: process.env.EMAIL,
+      to: process.env.EMAIL,
+      subject: '掘金签到通知🔔',
+      html: `<h1> ${process.env.COOKIE}---cookie</h1>\n <h3>${process.env.EMAIL}--email</h3>`
+    })
+
+  } catch (error) {
+    console.error(`邮件发送失败！${error}`)
+  }
+
+
+}
+```
+![image](https://user-images.githubusercontent.com/46524158/149060568-3cb6e145-bc16-45e0-b63b-716db2e774a4.png)
+
+![image](https://user-images.githubusercontent.com/46524158/149060613-4d5f73ff-0652-48d7-b8d7-6f0cb6b9e240.png)
+
+
+
+有其他想法或功能 欢迎进行讨论 
