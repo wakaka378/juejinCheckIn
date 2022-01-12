@@ -164,7 +164,7 @@ const sendEmail = async () => {
     console.log(process.env.EMAIL, '-----EMAIL')
     console.log(process.env.service, '-----service')
     const transporter = nodemailer.createTransport({
-      service: config.emailConfig.service, // 邮箱服务
+      service: process.env.service, // 邮箱服务
       // host: 'smtp.163.com',
       port: 465,
       secure: true,
