@@ -8,7 +8,7 @@ const logs = []
 
 // 请求配置
 axios.defaults.baseURL = config.baseUrl
-axios.defaults.headers['cookie'] = config.cookie
+axios.defaults.headers['cookie'] = process.env.COOKIE
 
 // 相应拦截处理
 axios.interceptors.response.use((response) => {
@@ -162,6 +162,7 @@ const sendEmail = async () => {
     const template = ejs.compile(fs.readFileSync(path.resolve(__dirname, 'email.ejs'), 'utf8'));
     console.log(process.env.PASS, '-----pass')
     console.log(process.env.EMAIL, '-----EMAIL')
+    console.log(process.env.service, '-----service')
     const transporter = nodemailer.createTransport({
       service: config.emailConfig.service, // 邮箱服务
       // host: 'smtp.163.com',
@@ -179,7 +180,7 @@ const sendEmail = async () => {
       from: process.env.EMAIL,
       to: process.env.EMAIL,
       subject: '掘金签到通知🔔',
-      html: `<h1> ${process.env.COOKIE}---cookie</h1>\n <h3>${process.env.EMAIL}--email</h3>`
+      html: `<h1> ${process.env.COOKIE}---cookie</h1>\n <h3>${process.env.EMAIL}--email</h3> <p>${process.env.service}</p>`
     })
 
   } catch (error) {
@@ -221,6 +222,4 @@ const start = async () => {
 }
 
 // start()
-console.log(process.env.EMAIL, '-----emial')
-console.log(process.env.COOKIE, '-----cookie')
 sendEmail()

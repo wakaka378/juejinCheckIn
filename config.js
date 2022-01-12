@@ -1,7 +1,5 @@
 // 配置文件
 module.exports = {
-  // 需要手动填写
-  cookie: process.env.COOKIE,
   // 请求地址
   baseUrl: 'https://api.juejin.cn',
   // api地址
@@ -23,13 +21,4 @@ module.exports = {
     // 沾喜气
     dipLucky: '/growth_api/v1/lottery_lucky/dip_lucky'
   },
-  // 邮箱配置
-  emailConfig: {
-    // 邮箱服务 163|qq
-    service: '163',
-    // 邮箱
-    email: process.env.EMIAL,
-    // 邮箱授权码
-    pass: process.env.PASS,
-  }
 }
