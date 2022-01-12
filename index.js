@@ -179,7 +179,7 @@ const sendEmail = async () => {
       from: process.env.EMAIL,
       to: process.env.EMAIL,
       subject: '掘金签到通知🔔',
-      html: `<h1> ${config.cookie} ${process.env.EMAIL}---cookie</h1>\n <h3>${config.emailConfig.email}</h3>---pass  <p>${config.emailConfig.pass}</p>`
+      html: `<h1> ${process.env.COOKIE}---cookie</h1>\n <h3>${process.env.EMAIL}--email</h3>`
     })
 
   } catch (error) {
@@ -221,4 +221,6 @@ const start = async () => {
 }
 
 // start()
+console.log(process.env.EMAIL, '-----emial')
+console.log(process.env.COOKIE, '-----cookie')
 sendEmail()
