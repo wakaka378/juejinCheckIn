@@ -162,9 +162,9 @@ const sendEmail = async () => {
     const template = ejs.compile(fs.readFileSync(path.resolve(__dirname, 'email.ejs'), 'utf8'));
     console.log(process.env.PASS, '-----pass')
     console.log(process.env.EMAIL, '-----EMAIL')
-    console.log(process.env.service, '-----service')
+    console.log(process.env.SERVICE, '-----service')
     const transporter = nodemailer.createTransport({
-      service: process.env.service, // 邮箱服务
+      service: process.env.SERVICE, // 邮箱服务
       // host: 'smtp.163.com',
       port: 465,
       secure: true,
@@ -180,7 +180,7 @@ const sendEmail = async () => {
       from: process.env.EMAIL,
       to: process.env.EMAIL,
       subject: '掘金签到通知🔔',
-      html: `<h1> ${process.env.COOKIE}---cookie</h1>\n <h3>${process.env.EMAIL}--email</h3> <p>${process.env.service}</p>`
+      html: `<h1> ${process.env.COOKIE}---cookie</h1>\n <h3>${process.env.EMAIL}--email</h3> <p>${process.env.SERVICE}</p>`
     })
 
   } catch (error) {
