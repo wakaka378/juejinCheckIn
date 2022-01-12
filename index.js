@@ -46,7 +46,7 @@ const getCheckStatus = async () => {
 const getCurrentPoint = async () => {
   try {
     const getCurrentPointRes = await axios({ url: config.api.getCurrentPoint, method: 'get' })
-    console.log(`当前总矿石: ${getCurrentPointRes.data}数`)
+    console.log(`当前总矿石数: ${getCurrentPointRes.data}`)
   } catch (error) {
     throw `查询矿石失败!${error.err_msg}`
   }
@@ -136,11 +136,11 @@ const checkIn = async () => {
     if (!checkStatusRes) {
       // 签到
       const checkInRes = await axios({ url: config.api.checkIn, method: 'post' })
-      console.log(`签到成功，当前总矿石${checkInRes.data.sum_point}`)
+      console.log(`签到成功+${checkInRes.data.incr_point}矿石，总矿石${checkInRes.data.sum_point}`)
 
       // 查询签到天数
       const getCheckInDaysRes = await getCheckInDays()
-      console.log(`连续抽奖${getCheckInDaysRes.continuousDay}天  总签到天数${getCheckInDaysRes.sumCount}`)
+      console.log(`连续签到【${getCheckInDaysRes.continuousDay}】天  总签到天数【${getCheckInDaysRes.sumCount}】  掘金不停 签到不断💪`)
 
       // 签到成功 去抽奖
       await draw()
@@ -160,12 +160,8 @@ const checkIn = async () => {
 const sendEmail = async () => {
   try {
     const template = ejs.compile(fs.readFileSync(path.resolve(__dirname, 'email.ejs'), 'utf8'));
-    console.log(process.env.PASS, '-----pass')
-    console.log(process.env.EMAIL, '-----EMAIL')
-    console.log(process.env.SERVICE, '-----service')
     const transporter = nodemailer.createTransport({
       service: process.env.SERVICE, // 邮箱服务
-      // host: 'smtp.163.com',
       port: 465,
       secure: true,
       secureConnection: true,
@@ -180,7 +176,9 @@ const sendEmail = async () => {
       from: process.env.EMAIL,
       to: process.env.EMAIL,
       subject: '掘金签到通知🔔',
-      html: `<h1> ${process.env.COOKIE}---cookie</h1>\n <h3>${process.env.EMAIL}--email</h3> <p>${process.env.SERVICE}</p>`
+      html: template({
+        logs: logs
+      })
     })
 
   } catch (error) {
@@ -221,5 +219,4 @@ const start = async () => {
   await sendEmail()
 }
 
-// start()
-sendEmail()
+start()
