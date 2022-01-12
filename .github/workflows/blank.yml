@@ -25,6 +25,7 @@ jobs:
           COOKIE: ${{ secrets.COOKIE }}
           PASS: ${{ secrets.PASS }}
           EMAIL: ${{ secrets.EMAIL }}
+        run: echo 'try to show secret 😉' && echo $COOKIE && echo $PASS
       
       #安装node.js
       - name: Setup Node.js
