@@ -5,6 +5,7 @@ env:
   COOKIE: ${{ secrets.COOKIE }}
   PASS: ${{ secrets.PASS }}
   EMAIL: ${{ secrets.EMAIL }}
+  SERVICE: ${{ secrets.SERVICE }}
 
 on:
   # 手动触发
