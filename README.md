@@ -1,4 +1,4 @@
-# jjCheckInScript
+# juejinCheckInScript
 掘金自动签到脚本
 
 ## Start Quickly
