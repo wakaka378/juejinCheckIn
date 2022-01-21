@@ -67,14 +67,31 @@ const getlotteryStatus = async () => {
 }
 
 /**
+ * 获取沾喜气列表用户historyId
+ *
+ * @return {string} 被沾的幸运儿的history_id
+ */
+const getLuckyUserHistoryId = async () => {
+  try {
+    // 接口为分页查询  默认查询条10条数据 {page_no: 0, page_size: 5}
+    const luckyList = await axios({ url: config.api.getLuckyUserList, method: 'post' })
+    // 随机抽取一位幸运儿  沾他
+    return luckyList.data.lotteries[Math.floor(Math.random() * luckyList.data.lotteries.length)]?.history_id
+  } catch (error) {
+    throw `获取沾喜气列表用户historyId失败`
+  }
+}
+
+/**
  * 占喜气
  *
  */
 const dipLucky = async () => {
   try {
-    const getDipLuckyStatusRes = await axios({ url: config.api.getDipLuckyStatus, method: 'post' })
-    const dipLuckyRes = await axios({ url: config.api.dipLucky, method: 'post' })
-    // TODO:  无法区分当前是否有占喜气机会  
+    // 获取historyId
+    const historyId = await getLuckyUserHistoryId()
+    // 沾喜气接口   传递lottery_history_id
+    const dipLuckyRes = await axios({ url: config.api.dipLucky, method: 'post', data: { lottery_history_id: historyId } })
     console.log(`占喜气成功! 🎉 【当前幸运值：${dipLuckyRes.data.total_value}/6000】`)
   } catch (error) {
     throw `占喜气失败！ ${error}`
@@ -90,16 +107,15 @@ const draw = async () => {
     const freeCount = await getlotteryStatus()
     if (freeCount) {
       // 没有免费抽奖次数
-      throw '今日免费抽奖以用完'
+      throw '今日免费抽奖已用完'
     }
-
-    // 先占一下喜气
-    await dipLucky()
 
     // 开始抽奖
     const drawRes = await axios({ url: config.api.draw, method: 'post' })
     console.log(`恭喜你抽到【${drawRes.data.lottery_name}】🎉`)
 
+    // 沾喜气
+    await dipLucky()
     if (drawRes.data.lottery_type === 1) {
       // 抽到矿石 查询总矿石
       await getCurrentPoint()

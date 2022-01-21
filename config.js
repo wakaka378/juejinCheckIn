@@ -16,8 +16,8 @@ module.exports = {
     getlotteryStatus: '/growth_api/v1/lottery_config/get',
     // 抽奖
     draw: '/growth_api/v1/lottery/draw',
-    // 查询今天沾过喜气没
-    getDipLuckyStatus: '/growth_api/v1/lottery_lucky/my_lucky',
+    // 获取沾喜气列表用户
+    getLuckyUserList: '/growth_api/v1/lottery_history/global_big',
     // 沾喜气
     dipLucky: '/growth_api/v1/lottery_lucky/dip_lucky'
   },
