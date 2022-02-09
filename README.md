@@ -1,5 +1,5 @@
 # juejinCheckInScript
-掘金自动签到脚本
+掘金自动签到脚本， 如果对你有帮助，点个🌟行不行
 
 ## Start Quickly
 
