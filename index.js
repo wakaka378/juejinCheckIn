@@ -235,4 +235,4 @@ const start = async () => {
   await sendEmail()
 }
 
-start()
+// start()
