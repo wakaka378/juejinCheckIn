@@ -1,6 +1,9 @@
 # juejinCheckInScript
 掘金自动签到脚本， 如果对你有帮助，点个🌟行不行
 
+# 脚本已经停用
+掘金官方已经对自动签到脚本做了措施，继续使用自动签到脚本可能面临清空矿石等风险，具体规则查看[沸点](https://juejin.cn/pin/7065954293509160997)。项目启动函数已经屏蔽，感兴趣的小伙伴看看就行，大家还是遵循社区规范。
+
 ## Start Quickly
 
 将 **[juejinCheckIn](https://github.com/gebilaofan/juejinCheckIn)**`Fork`到自己的仓库  然后将项目`clone`下来 
