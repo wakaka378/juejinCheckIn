@@ -25,7 +25,7 @@
 // /**
 //  * 查看今天是否已经签到
 //  *
-//  * @return {Boolean} 是否签到过 
+//  * @return {Boolean} 是否签到过
 //  */
 // const getCheckStatus = async () => {
 //   try {
@@ -139,10 +139,9 @@
 //   }
 // }
 
-
 // /**
 //  * 签到
-//  * 
+//  *
 //  */
 // const checkIn = async () => {
 //   try {
@@ -201,9 +200,7 @@
 //     console.error(`邮件发送失败！${error}`)
 //   }
 
-
 // }
-
 
 // /**
 //  * 启动程序  处理日志输出 开始签到流程 将结果通过邮件形式发送
@@ -237,20 +234,66 @@
 
 // // start()
 
-
 async function start() {
-  const puppeteer = require('puppeteer');
+  try {
+    const puppeteer = require('puppeteer')
+    const url = 'https://juejin.cn/'
+    const browser = await puppeteer.launch({
+      headless: false,
+      timeout: 3000,
+      devtools: true,  // 调试面板
+    })
   
-  const browser = await puppeteer.launch({
-    headless: false,
-    timeout: 3000,
-  });
-  
-  const page = await browser.newPage();
-  
-  await page.goto('https://juejin.cn/')
-  console.log(page, '---page')
+    
+    const page = await browser.newPage()
+    
+    // 添加cookie
+    await addCookie(page, '.juejin.cn')
+
+    await page.goto(url)
+    
+
+    page.on('close', () => {
+      console.log('页面关闭')
+    })
+  } catch (error) {
+    console.error(`签到失败!=======> ${error}`)
+  }
 
 }
 
 start()
+
+/**
+ * 添加cookie
+ *
+ * @param {*} page
+ * @param {*} domain
+ * @return {Promise}
+ */
+async function addCookie(page, domain) {
+  try {
+    const cookiesStr =
+      'MONITOR_WEB_ID=5203d142-eac0-4d92-9088-54e6ab047b59; _tea_utm_cache_2608={"utm_source":"gold_browser_extension"}; __tea_cookie_tokens_2608=%7B%22user_unique_id%22%3A%227045840987474527755%22%2C%22web_id%22%3A%227045840987474527755%22%2C%22timestamp%22%3A1650378307061%7D; _ga=GA1.2.1448381689.1650417412; passport_csrf_token=45b6f3ecf3b9d63b5d04deed82670b32; passport_csrf_token_default=45b6f3ecf3b9d63b5d04deed82670b32; n_mh=o10NasVjxZMV8AhnseSRNnfPCxigoTAM_Od1FEZsuR0; passport_auth_status=97ea735c0598a52a7a838db58bce3203,; passport_auth_status_ss=97ea735c0598a52a7a838db58bce3203,; sid_guard=b7eeb793eff7c7bc2fe6de96f5696530|1650417432|31536000|Thu,+20-Apr-2023+01:17:12+GMT; uid_tt=9f872caf68276837e5b10c395fb2ca32; uid_tt_ss=9f872caf68276837e5b10c395fb2ca32; sid_tt=b7eeb793eff7c7bc2fe6de96f5696530; sessionid=b7eeb793eff7c7bc2fe6de96f5696530; sid_ucp_v1=1.0.0-KDc0MmY3YjNlOGE0NWVlZjljYjBjZTM3ZTNhMTk1ZTRmYjZjM2RjY2MKFwi3s_DA_fWVBBCYvv2SBhiwFDgCQPEHGgJsZiIgYjdlZWI3OTNlZmY3YzdiYzJmZTZkZTk2ZjU2OTY1MzA; ssid_ucp_v1=1.0.0-KDc0MmY3YjNlOGE0NWVlZjljYjBjZTM3ZTNhMTk1ZTRmYjZjM2RjY2MKFwi3s_DA_fWVBBCYvv2SBhiwFDgCQPEHGgJsZiIgYjdlZWI3OTNlZmY3YzdiYzJmZTZkZTk2ZjU2OTY1MzA; _gid=GA1.2.1280376390.1652059751'
+  
+    let cookies = cookiesStr.split(';').map((item) => {
+      let name = item.trim().slice(0, item.trim().indexOf('='))
+      let value = item.trim().slice(item.trim().indexOf('=') + 1)
+      return { name, value, domain }
+    })
+    await Promise.all(cookies.map(item => {
+      return page.setCookie(item)
+    }))
+    console.log('设置cookie成功🎉')
+    
+  } catch (error) {
+    throw new Error('设置cookie失败, 请检查cookie格式是否正确')
+  }
+}
+
+
+async function checkInHandler(page) {
+  // 签到
+  // 沾喜气
+  // 抽奖
+}
