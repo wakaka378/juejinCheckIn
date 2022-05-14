@@ -240,7 +240,6 @@ async function start() {
     const url = 'https://juejin.cn/'
     const browser = await puppeteer.launch({
       headless: false,
-      timeout: 3000,
       devtools: true,  // 调试面板
     })
   
@@ -251,8 +250,9 @@ async function start() {
     await addCookie(page, '.juejin.cn')
 
     await page.goto(url)
-    
 
+    // 处理签到流程
+    checkInHandler(page)
     page.on('close', () => {
       console.log('页面关闭')
     })
@@ -296,4 +296,18 @@ async function checkInHandler(page) {
   // 签到
   // 沾喜气
   // 抽奖
+  // let avatar = await page.$('.avatar')
+  // avatar.click()
+
+  // 点击头像
+  await page.click('#juejin > div.view-container.container > div > header > div > nav > ul > ul > li.nav-item.menu')
+  
+  // 点击签到赢好礼
+  await page.click('#juejin > div.view-container.container > div > header > div > nav > ul > ul > li.nav-item.menu > ul > div:nth-child(2) > li.nav-menu-item.signin')
+
+  
+  // 点击签到
+  // await page.click('#juejin > div.view-container > main > div.right-wrap > div > div:nth-child(1) > div.signin > div.signin-content > div.content-right > div')
+  let signinDom = await page.waitForSelector('#juejin > div.view-container > main > div.right-wrap > div > div:nth-child(1) > div.signin > div.signin-content > div.content-right > div')
+  signinDom.click()
 }
