@@ -310,4 +310,23 @@ async function checkInHandler(page) {
   // await page.click('#juejin > div.view-container > main > div.right-wrap > div > div:nth-child(1) > div.signin > div.signin-content > div.content-right > div')
   let signinDom = await page.waitForSelector('#juejin > div.view-container > main > div.right-wrap > div > div:nth-child(1) > div.signin > div.signin-content > div.content-right > div')
   signinDom.click()
+
+  // TODO: 监听签到接口  并判断签到是否成功
+
+
+  // 获取当前签到的矿石数量
+
+  // 去抽奖
+  let drawDom = await page.waitForSelector('body > div.success-modal.byte-modal.v-transfer-dom > div.byte-modal__wrapper > div > div.byte-modal__body > div > div.btn-area')
+  drawDom.click()
+  
+  // 沾喜气
+    
+let dipLuckyDom = await page.waitForSelector('#stick-txt-0 > span > span')
+dipLuckyDom.click()
+
+
+  // 获取当前查询次数  查看是否有免费抽奖
+  let freeDrawDom = await page.waitForSelector('#cost-box > div:nth-child(1)')
+  freeDrawDom.click()
 }
