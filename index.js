@@ -233,19 +233,19 @@
 // }
 
 // // start()
+const puppeteer = require('puppeteer')
+const { api } = require('./config')
 
 async function start() {
   try {
-    const puppeteer = require('puppeteer')
     const url = 'https://juejin.cn/'
     const browser = await puppeteer.launch({
       headless: false,
-      devtools: true,  // 调试面板
+      devtools: true, // 调试面板
     })
-  
-    
+
     const page = await browser.newPage()
-    
+
     // 添加cookie
     await addCookie(page, '.juejin.cn')
 
@@ -259,7 +259,6 @@ async function start() {
   } catch (error) {
     console.error(`签到失败!=======> ${error}`)
   }
-
 }
 
 start()
@@ -275,58 +274,113 @@ async function addCookie(page, domain) {
   try {
     const cookiesStr =
       'MONITOR_WEB_ID=5203d142-eac0-4d92-9088-54e6ab047b59; _tea_utm_cache_2608={"utm_source":"gold_browser_extension"}; __tea_cookie_tokens_2608=%7B%22user_unique_id%22%3A%227045840987474527755%22%2C%22web_id%22%3A%227045840987474527755%22%2C%22timestamp%22%3A1650378307061%7D; _ga=GA1.2.1448381689.1650417412; passport_csrf_token=45b6f3ecf3b9d63b5d04deed82670b32; passport_csrf_token_default=45b6f3ecf3b9d63b5d04deed82670b32; n_mh=o10NasVjxZMV8AhnseSRNnfPCxigoTAM_Od1FEZsuR0; passport_auth_status=97ea735c0598a52a7a838db58bce3203,; passport_auth_status_ss=97ea735c0598a52a7a838db58bce3203,; sid_guard=b7eeb793eff7c7bc2fe6de96f5696530|1650417432|31536000|Thu,+20-Apr-2023+01:17:12+GMT; uid_tt=9f872caf68276837e5b10c395fb2ca32; uid_tt_ss=9f872caf68276837e5b10c395fb2ca32; sid_tt=b7eeb793eff7c7bc2fe6de96f5696530; sessionid=b7eeb793eff7c7bc2fe6de96f5696530; sid_ucp_v1=1.0.0-KDc0MmY3YjNlOGE0NWVlZjljYjBjZTM3ZTNhMTk1ZTRmYjZjM2RjY2MKFwi3s_DA_fWVBBCYvv2SBhiwFDgCQPEHGgJsZiIgYjdlZWI3OTNlZmY3YzdiYzJmZTZkZTk2ZjU2OTY1MzA; ssid_ucp_v1=1.0.0-KDc0MmY3YjNlOGE0NWVlZjljYjBjZTM3ZTNhMTk1ZTRmYjZjM2RjY2MKFwi3s_DA_fWVBBCYvv2SBhiwFDgCQPEHGgJsZiIgYjdlZWI3OTNlZmY3YzdiYzJmZTZkZTk2ZjU2OTY1MzA; _gid=GA1.2.1280376390.1652059751'
-  
+
     let cookies = cookiesStr.split(';').map((item) => {
       let name = item.trim().slice(0, item.trim().indexOf('='))
       let value = item.trim().slice(item.trim().indexOf('=') + 1)
       return { name, value, domain }
     })
-    await Promise.all(cookies.map(item => {
-      return page.setCookie(item)
-    }))
+    await Promise.all(
+      cookies.map((item) => {
+        return page.setCookie(item)
+      })
+    )
     console.log('设置cookie成功🎉')
-    
   } catch (error) {
     throw new Error('设置cookie失败, 请检查cookie格式是否正确')
   }
 }
 
-
 async function checkInHandler(page) {
-  // 签到
-  // 沾喜气
-  // 抽奖
-  // let avatar = await page.$('.avatar')
-  // avatar.click()
+  try {
+    // 签到
+    // 沾喜气
+    // 抽奖
+    // let avatar = await page.$('.avatar')
+    // avatar.click()
 
-  // 点击头像
-  await page.click('#juejin > div.view-container.container > div > header > div > nav > ul > ul > li.nav-item.menu')
-  
-  // 点击签到赢好礼
-  await page.click('#juejin > div.view-container.container > div > header > div > nav > ul > ul > li.nav-item.menu > ul > div:nth-child(2) > li.nav-menu-item.signin')
+    // 点击头像
+    await page.click('#juejin > div.view-container.container > div > header > div > nav > ul > ul > li.nav-item.menu')
 
-  
-  // 点击签到
-  // await page.click('#juejin > div.view-container > main > div.right-wrap > div > div:nth-child(1) > div.signin > div.signin-content > div.content-right > div')
-  let signinDom = await page.waitForSelector('#juejin > div.view-container > main > div.right-wrap > div > div:nth-child(1) > div.signin > div.signin-content > div.content-right > div')
-  signinDom.click()
+    // 点击签到赢好礼
+    await page.click('#juejin > div.view-container.container > div > header > div > nav > ul > ul > li.nav-item.menu > ul > div:nth-child(2) > li.nav-menu-item.signin')
 
-  // TODO: 监听签到接口  并判断签到是否成功
+    // 点击签到  查看今天是否签到过
+    // await page.click('#juejin > div.view-container > main > div.right-wrap > div > div:nth-child(1) > div.signin > div.signin-content > div.content-right > div')
+    let signinDom = await page.waitForSelector('#juejin > div.view-container > main > div.right-wrap > div > div:nth-child(1) > div.signin > div.signin-content > div.content-right > div')
+    signinDom.click()
 
+    // TODO: 监听签到接口  并判断签到是否成功
+    await waitForResponseHandler(page, api.getCheckStatus, (res) => {
+      console.log(res, '-----res')
+    })
 
-  // 获取当前签到的矿石数量
+    // const waitResult = await page.waitForResponse(response => {
+    //   console.log(response.json(), '---response')
+    //   // response.json().then(res => {
+    //   //   console.log(res, '----buffer res')
+    //   // })
+    //   if(response.ok()) {
+    //     const url = response.url()
+    //     console.log("~~~~ url", typeof url);
+    //     console.log(api.getCheckStatus, '------api.getCheckStatus')
+    //     console.log( url.includes(api.getCheckStatus), '-----是否签到')
+    //     if (url.includes(api.getCheckStatus)) {
+    //       response.json().then(res=>{
+    //         console.log(res, '---res')
+    //         if (res.err_msg === 'success') {
+    //           throw new Error('您今日已经完成签到，请勿重复签到！')
+    //         }
+    //       })
+    //     }
+    //   }
+    // })
 
-  // 去抽奖
-  let drawDom = await page.waitForSelector('body > div.success-modal.byte-modal.v-transfer-dom > div.byte-modal__wrapper > div > div.byte-modal__body > div > div.btn-area')
-  drawDom.click()
-  
-  // 沾喜气
-    
-let dipLuckyDom = await page.waitForSelector('#stick-txt-0 > span > span')
-dipLuckyDom.click()
+    // 获取当前签到的矿石数量
 
+    // 去抽奖
+    //   let drawDom = await page.waitForSelector('body > div.success-modal.byte-modal.v-transfer-dom > div.byte-modal__wrapper > div > div.byte-modal__body > div > div.btn-area')
+    //   drawDom.click()
 
-  // 获取当前查询次数  查看是否有免费抽奖
-  let freeDrawDom = await page.waitForSelector('#cost-box > div:nth-child(1)')
-  freeDrawDom.click()
+    //   // 沾喜气
+
+    // let dipLuckyDom = await page.waitForSelector('#stick-txt-0 > span > span')
+    // dipLuckyDom.click()
+
+    //   // 获取当前查询次数  查看是否有免费抽奖
+    //   let freeDrawDom = await page.waitForSelector('#cost-box > div:nth-child(1)')
+    //   freeDrawDom.click()
+  } catch (error) {
+    console.log(error, '---rrr')
+  }
+}
+
+/**
+ * 等待请求响应封装  用于匹配到对应的请求 url 之后的操作  返回请求的结果
+ *
+ * @param {*} page
+ * @param {*} matchUrl
+ * @param {*} responseFn
+ * @return {*} 
+ */
+async function waitForResponseHandler(page, matchUrl, responseFn) {
+  console.log('~~~~ matchUrl', matchUrl)
+  try {
+    const waitResult = await page.waitForResponse(async (response) => {
+      if (response.ok()) {
+        const url = response.url()
+        console.log('~~~~ url', url)
+        console.log(matchUrl, '------matchUrl')
+        if (url.includes(matchUrl)) {
+          console.log('请求匹配成功！')
+          let jsonRes = await response.json()
+          responseFn(jsonRes)
+        }
+      }
+    })
+
+    return waitResult
+  } catch (error) {
+    throw new Error(error)
+  }
 }
