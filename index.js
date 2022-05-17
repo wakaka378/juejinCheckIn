@@ -305,14 +305,63 @@ async function checkInHandler(page) {
     // 点击签到赢好礼
     await page.click('#juejin > div.view-container.container > div > header > div > nav > ul > ul > li.nav-item.menu > ul > div:nth-child(2) > li.nav-menu-item.signin')
 
-    // 点击签到  查看今天是否签到过
-    // await page.click('#juejin > div.view-container > main > div.right-wrap > div > div:nth-child(1) > div.signin > div.signin-content > div.content-right > div')
+    // 查看今天是否签到过
+    await waitForResponseHandler(page, api.getCheckStatus, (res) => {
+      if (res.data) {
+        // throw '您今日已完成签到，请勿重复签到'
+        console.log(res, '-----是否签到')
+      }
+    })
+    console.log('签到')
+    // 签到
     let signinDom = await page.waitForSelector('#juejin > div.view-container > main > div.right-wrap > div > div:nth-child(1) > div.signin > div.signin-content > div.content-right > div')
     signinDom.click()
 
-    // TODO: 监听签到接口  并判断签到是否成功
+    // 签到矿石
     await waitForResponseHandler(page, api.getCheckStatus, (res) => {
-      console.log(res, '-----res')
+      console.log(res, '------签到结果')
+      if (res.success) {
+        console.log(`签到成功+${res.data.incr_point}矿石，总矿石${res.data.sum_point}`)
+      }
+    })
+
+    // 查询签到天数
+    await waitForResponseHandler(page, api.getCheckInDays, (res) => {
+      console.log(res, '------查询签到天数')
+      if (res.success) {
+        console.log(`连续签到【${res.continuousDay}】天  总签到天数【${res.sumCount}】  掘金不停 签到不断💪`)
+      }
+    })
+
+    // 沾喜气
+    let dipLuckyDom = await page.waitForSelector('#stick-txt-0 > span > span')
+    dipLuckyDom.click()
+
+    // 查看沾喜气次数
+    await waitForResponseHandler(page, api.dipLucky, (res) => {
+      console.log(res, '------沾喜气结果')
+      if (res.success) {
+        console.log(`占喜气成功! 🎉 【当前幸运值：${dipLuckyRes.data.total_value}/6000】`)
+      }
+    })
+
+    // 查询免费抽奖
+    await waitForResponseHandler(page, api.getlotteryStatus, (res) => {
+      console.log(res, '------免费抽奖次数')
+      if (res.data.free_count === 0 && res.success) {
+        throw '今日免费抽奖已用完'
+      }
+    })
+    // 抽奖
+    let drawDom = await page.waitForSelector('body > div.success-modal.byte-modal.v-transfer-dom > div.byte-modal__wrapper > div > div.byte-modal__body > div > div.btn-area')
+    drawDom.click()
+
+    // 抽奖结果
+    await waitForResponseHandler(page, api.draw, (res) => {
+      console.log(res, '------抽奖结果')
+      if (res.success) {
+        console.log(`恭喜你抽到【${res.data.lottery_name}】🎉`)
+      }
     })
 
     // const waitResult = await page.waitForResponse(response => {
@@ -336,17 +385,6 @@ async function checkInHandler(page) {
     //   }
     // })
 
-    // 获取当前签到的矿石数量
-
-    // 去抽奖
-    //   let drawDom = await page.waitForSelector('body > div.success-modal.byte-modal.v-transfer-dom > div.byte-modal__wrapper > div > div.byte-modal__body > div > div.btn-area')
-    //   drawDom.click()
-
-    //   // 沾喜气
-
-    // let dipLuckyDom = await page.waitForSelector('#stick-txt-0 > span > span')
-    // dipLuckyDom.click()
-
     //   // 获取当前查询次数  查看是否有免费抽奖
     //   let freeDrawDom = await page.waitForSelector('#cost-box > div:nth-child(1)')
     //   freeDrawDom.click()
@@ -361,7 +399,7 @@ async function checkInHandler(page) {
  * @param {*} page
  * @param {*} matchUrl
  * @param {*} responseFn
- * @return {*} 
+ * @return {*}
  */
 async function waitForResponseHandler(page, matchUrl, responseFn) {
   console.log('~~~~ matchUrl', matchUrl)
@@ -369,11 +407,10 @@ async function waitForResponseHandler(page, matchUrl, responseFn) {
     const waitResult = await page.waitForResponse(async (response) => {
       if (response.ok()) {
         const url = response.url()
-        console.log('~~~~ url', url)
-        console.log(matchUrl, '------matchUrl')
         if (url.includes(matchUrl)) {
           console.log('请求匹配成功！')
           let jsonRes = await response.json()
+          console.log("~~~~ jsonRes", jsonRes);
           responseFn(jsonRes)
         }
       }
@@ -381,6 +418,6 @@ async function waitForResponseHandler(page, matchUrl, responseFn) {
 
     return waitResult
   } catch (error) {
-    throw new Error(error)
+    throw '监听网络请求：' + matchUrl + '失败！' + 'error ===>', error
   }
 }
