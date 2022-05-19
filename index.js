@@ -316,9 +316,9 @@ async function checkInHandler(page) {
     // 签到
     let signinDom = await page.waitForSelector('#juejin > div.view-container > main > div.right-wrap > div > div:nth-child(1) > div.signin > div.signin-content > div.content-right > div')
     signinDom.click()
-
+    page.on('response')
     // 签到矿石
-    await waitForResponseHandler(page, api.getCheckStatus, (res) => {
+    waitForResponseHandler(page, api.checkIn, (res) => {
       console.log(res, '------签到结果')
       if (res.success) {
         console.log(`签到成功+${res.data.incr_point}矿石，总矿石${res.data.sum_point}`)
@@ -334,35 +334,35 @@ async function checkInHandler(page) {
     })
 
     // 沾喜气
-    let dipLuckyDom = await page.waitForSelector('#stick-txt-0 > span > span')
-    dipLuckyDom.click()
+    // let dipLuckyDom = await page.waitForSelector('#stick-txt-0 > span > span')
+    // dipLuckyDom.click()
 
-    // 查看沾喜气次数
-    await waitForResponseHandler(page, api.dipLucky, (res) => {
-      console.log(res, '------沾喜气结果')
-      if (res.success) {
-        console.log(`占喜气成功! 🎉 【当前幸运值：${dipLuckyRes.data.total_value}/6000】`)
-      }
-    })
+    // // 查看沾喜气次数
+    // await waitForResponseHandler(page, api.dipLucky, (res) => {
+    //   console.log(res, '------沾喜气结果')
+    //   if (res.success) {
+    //     console.log(`占喜气成功! 🎉 【当前幸运值：${dipLuckyRes.data.total_value}/6000】`)
+    //   }
+    // })
 
-    // 查询免费抽奖
-    await waitForResponseHandler(page, api.getlotteryStatus, (res) => {
-      console.log(res, '------免费抽奖次数')
-      if (res.data.free_count === 0 && res.success) {
-        throw '今日免费抽奖已用完'
-      }
-    })
-    // 抽奖
-    let drawDom = await page.waitForSelector('body > div.success-modal.byte-modal.v-transfer-dom > div.byte-modal__wrapper > div > div.byte-modal__body > div > div.btn-area')
-    drawDom.click()
+    // // 查询免费抽奖
+    // await waitForResponseHandler(page, api.getlotteryStatus, (res) => {
+    //   console.log(res, '------免费抽奖次数')
+    //   if (res.data.free_count === 0 && res.success) {
+    //     throw '今日免费抽奖已用完'
+    //   }
+    // })
+    // // 抽奖
+    // let drawDom = await page.waitForSelector('body > div.success-modal.byte-modal.v-transfer-dom > div.byte-modal__wrapper > div > div.byte-modal__body > div > div.btn-area')
+    // drawDom.click()
 
-    // 抽奖结果
-    await waitForResponseHandler(page, api.draw, (res) => {
-      console.log(res, '------抽奖结果')
-      if (res.success) {
-        console.log(`恭喜你抽到【${res.data.lottery_name}】🎉`)
-      }
-    })
+    // // 抽奖结果
+    // await waitForResponseHandler(page, api.draw, (res) => {
+    //   console.log(res, '------抽奖结果')
+    //   if (res.success) {
+    //     console.log(`恭喜你抽到【${res.data.lottery_name}】🎉`)
+    //   }
+    // })
 
     // const waitResult = await page.waitForResponse(response => {
     //   console.log(response.json(), '---response')
@@ -404,18 +404,11 @@ async function checkInHandler(page) {
 async function waitForResponseHandler(page, matchUrl, responseFn) {
   console.log('~~~~ matchUrl', matchUrl)
   try {
-    const waitResult = await page.waitForResponse(async (response) => {
-      if (response.ok()) {
-        const url = response.url()
-        if (url.includes(matchUrl)) {
-          console.log('请求匹配成功！')
-          let jsonRes = await response.json()
-          console.log("~~~~ jsonRes", jsonRes);
-          responseFn(jsonRes)
-        }
-      }
-    })
-
+    const waitResult = await page.waitForResponse(response => response.url() .includes(matchUrl) && response.status() === 200);
+    if (waitResult.ok()) {
+      const jsonData = await waitResult.json();
+      await responseFn(jsonData)
+    }
     return waitResult
   } catch (error) {
     throw '监听网络请求：' + matchUrl + '失败！' + 'error ===>', error
