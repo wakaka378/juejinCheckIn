@@ -306,19 +306,19 @@ async function checkInHandler(page) {
     await page.click('#juejin > div.view-container.container > div > header > div > nav > ul > ul > li.nav-item.menu > ul > div:nth-child(2) > li.nav-menu-item.signin')
 
     // 查看今天是否签到过
-    await waitForResponseHandler(page, api.getCheckStatus, (res) => {
-      if (res.data) {
-        // throw '您今日已完成签到，请勿重复签到'
-        console.log(res, '-----是否签到')
-      }
+    await onResponse(page, api.getCheckStatus, async (res) => {
+      console.log(res, '-----是否签到')
+      // if (res.data) {
+      //   throw '您今日已完成签到，请勿重复签到'
+      // } else {
+        console.log('签到')
+        let signinDom = await page.waitForSelector('#juejin > div.view-container > main > div.right-wrap > div > div:nth-child(1) > div.signin > div.signin-content > div.content-right > div')
+        signinDom.click()
+      // }
     })
-    console.log('签到')
+    
     // 签到
-    let signinDom = await page.waitForSelector('#juejin > div.view-container > main > div.right-wrap > div > div:nth-child(1) > div.signin > div.signin-content > div.content-right > div')
-    signinDom.click()
-    page.on('response')
-    // 签到矿石
-    waitForResponseHandler(page, api.checkIn, (res) => {
+    onResponse(page, api.checkIn, (res) => {
       console.log(res, '------签到结果')
       if (res.success) {
         console.log(`签到成功+${res.data.incr_point}矿石，总矿石${res.data.sum_point}`)
@@ -326,7 +326,7 @@ async function checkInHandler(page) {
     })
 
     // 查询签到天数
-    await waitForResponseHandler(page, api.getCheckInDays, (res) => {
+    await onResponse(page, api.getCheckInDays, (res) => {
       console.log(res, '------查询签到天数')
       if (res.success) {
         console.log(`连续签到【${res.continuousDay}】天  总签到天数【${res.sumCount}】  掘金不停 签到不断💪`)
@@ -338,7 +338,7 @@ async function checkInHandler(page) {
     // dipLuckyDom.click()
 
     // // 查看沾喜气次数
-    // await waitForResponseHandler(page, api.dipLucky, (res) => {
+    // await onResponse(page, api.dipLucky, (res) => {
     //   console.log(res, '------沾喜气结果')
     //   if (res.success) {
     //     console.log(`占喜气成功! 🎉 【当前幸运值：${dipLuckyRes.data.total_value}/6000】`)
@@ -346,7 +346,7 @@ async function checkInHandler(page) {
     // })
 
     // // 查询免费抽奖
-    // await waitForResponseHandler(page, api.getlotteryStatus, (res) => {
+    // await onResponse(page, api.getlotteryStatus, (res) => {
     //   console.log(res, '------免费抽奖次数')
     //   if (res.data.free_count === 0 && res.success) {
     //     throw '今日免费抽奖已用完'
@@ -357,7 +357,7 @@ async function checkInHandler(page) {
     // drawDom.click()
 
     // // 抽奖结果
-    // await waitForResponseHandler(page, api.draw, (res) => {
+    // await onResponse(page, api.draw, (res) => {
     //   console.log(res, '------抽奖结果')
     //   if (res.success) {
     //     console.log(`恭喜你抽到【${res.data.lottery_name}】🎉`)
@@ -389,7 +389,7 @@ async function checkInHandler(page) {
     //   let freeDrawDom = await page.waitForSelector('#cost-box > div:nth-child(1)')
     //   freeDrawDom.click()
   } catch (error) {
-    console.log(error, '---rrr')
+    console.log(error.message, '---rrr')
   }
 }
 
@@ -401,16 +401,20 @@ async function checkInHandler(page) {
  * @param {*} responseFn
  * @return {*}
  */
-async function waitForResponseHandler(page, matchUrl, responseFn) {
+function onResponse(page, matchUrl, responseFn) {
   console.log('~~~~ matchUrl', matchUrl)
   try {
-    const waitResult = await page.waitForResponse(response => response.url() .includes(matchUrl) && response.status() === 200);
-    if (waitResult.ok()) {
-      const jsonData = await waitResult.json();
-      await responseFn(jsonData)
-    }
-    return waitResult
+    page.on('response', async (interceptedRequest) => {
+      if (interceptedRequest.url().includes(matchUrl) && interceptedRequest.status() === 200) {
+        console.log(interceptedRequest.url(), '----url')
+        if (interceptedRequest.ok()) {
+          const jsonData = await interceptedRequest.json()
+          await responseFn(jsonData)
+        }
+        return interceptedRequest
+      }
+    })
   } catch (error) {
-    throw '监听网络请求：' + matchUrl + '失败！' + 'error ===>', error
+    throw ('监听网络请求：' + matchUrl + '失败！' + 'error ===>', error)
   }
 }
